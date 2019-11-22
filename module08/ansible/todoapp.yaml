@@ -1,0 +1,9 @@
+---
+- hosts: todoapp
+  tasks:
+    - name: Base Setup and Startup
+      include_role:
+        name: base
+    - name: Todoapp Setup and Startup
+      include_role:
+        name: todoapp

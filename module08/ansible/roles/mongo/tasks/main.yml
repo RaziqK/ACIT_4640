@@ -1,0 +1,13 @@
+---  
+- name: Install mongod
+  become: yes
+  package:
+    name: mongodb-server
+    state: installed
+
+- name: start mongod
+  become: yes
+  service:
+    name: mongod
+    enabled: yes
+    state: started

@@ -1,0 +1,51 @@
+---    
+- name: Create todoapp user
+  become: yes
+  user:
+    name: "{{todoapp_user}}"
+    password: P@ssw0rd
+
+- name: Git Clone Repo
+  become: yes
+  git:
+    repo: https://github.com/timoguic/ACIT4640-todo-app.git
+    dest: "/home/{{todoapp_user}}/app"
+
+- name: npm install
+  become: yes
+  npm:
+    path: "/home/{{todoapp_user}}/app"
+
+- name: permissions
+  become: yes
+  file:
+    path: "/home/{{todoapp_user}}"
+    state: directory
+    recurse: yes
+    mode: '0755'
+    owner: "{{todoapp_user}}"
+    group: "{{todoapp_user}}"
+
+- name: copy todoapp_service
+  become: yes
+  template:
+    src: todoapp_service.j2
+    dest: /lib/systemd/system/todoapp.service
+
+- name: Copy database file
+  become: yes
+  template:
+    src: database.j2
+    dest: "/home/{{todoapp_user}}/app/config/database.js"
+
+- name: deamon reloaded
+  become: yes
+  systemd:
+    daemon_reload: yes
+
+- name: start todoapp
+  become: yes
+  service:
+    name: todoapp
+    enabled: yes
+    state: started
